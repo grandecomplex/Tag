@@ -1,0 +1,77 @@
+.tag-wrapper ::-webkit-scrollbar {
+    width: 12px;
+}
+ 
+.tag-wrapper ::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+    background: #323232;
+}
+ 
+.tag-wrapper ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+    background: #AFAFAF;
+}
+
+.tag-wrapper {
+  position: relative;
+}
+
+.tag-list {
+  position: absolute;
+  left: -9999px;
+  max-height: 148px;
+  background: #323232;
+  width: 287px;
+  border-radius: 0 0 3px 3px;
+  z-index: 2;
+  overflow: auto;
+}
+
+.tag-list li {
+  cursor: pointer;
+  padding: 3px 5px;
+  color: #fff;
+  list-style: none  ``;
+}
+
+.tag-list li:hover,
+.tag-list li.highlighted {
+  background: #888;
+}
+
+.showing-list {
+  left: 0px !important;
+  top: 11px !important;
+}
+
+.tags {
+  margin-top: 10px;
+}
+
+.tags:empty {
+  margin-top: 0;
+}
+
+.tags div {
+  border-radius: 3px;
+  padding: 2px 24px 2px 7px;
+  display: inline-block;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  color: #BFBFBF;
+  position: relative;
+  background: #323232;
+}
+
+.tags a {
+  background: transparent url(<%= asset_data_uri "x.png" %>) no-repeat right 0;
+  position: absolute;
+  right: 0px;
+  top: 4px;
+  width: 9px;
+  height: 11px;
+  margin: 0 5px 0 0;
+  cursor: pointer;
+}
