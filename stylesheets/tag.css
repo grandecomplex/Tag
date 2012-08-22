@@ -27,16 +27,17 @@
   border-radius: 0 0 3px 3px;
   z-index: 2;
   overflow: auto;
+  padding: 0;
 }
 
 .tag-list li {
   cursor: pointer;
   padding: 3px 5px;
   color: #fff;
-  list-style: none  ``;
+  list-style: none;
+  margin: 0;
 }
 
-.tag-list li:hover,
 .tag-list li.highlighted {
   background: #888;
 }

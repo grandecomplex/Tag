@@ -18,12 +18,12 @@
 	
 	<script type="text/javascript" charset="utf-8">
   	$(function() {
-  	  var sectorTagging = new Tag("sector");
+  	  window.sectorTagging = new Tag("sector");
   	});
 	</script>
 </head>
 <body>
-  <div class="form-inline tag-wrapper">
+    <div class="form-inline tag-wrapper">
       <input id="sector-text" type="text" autocomplete="off" />
       <input id="sector-hidden" type="hidden" />
       <ul id="sector-list" class="tag-list">
@@ -175,7 +175,7 @@
       <li>Wireless</li>
       <li>Writing and Editing</li>
     </ul>
-      <div id="sector-tags" class="tags"></div>
+    <div id="sector-tags" class="tags"></div>
   </div>
 </body>
 </html>
