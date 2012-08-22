@@ -26,7 +26,7 @@
   width: 287px;
   border-radius: 0 0 3px 3px;
   z-index: 2;
-  overflow: auto;
+  overflow: hidden;
   padding: 0;
 }
 

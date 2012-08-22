@@ -16,12 +16,10 @@
   
   var maxVisibleItem, minVisibleItem = 0;
   
-  function setHeight($parent, $items, numberOfItems) {
+  function setHeight($parent, $items) {
     var height; 
     
-    if (!numberOfItems) {
-      numberOfItems = 5;
-    }
+    numberOfItems = 5;
     
     ITEMS_VISIBLE_COUNT = numberOfItems;
     resetMaxMinVisibleItems();
@@ -57,6 +55,7 @@
 
   Tag.prototype.addEvents = function() {
     var that = this;
+    var leaveTimer = 0;
 
     this.$list.find("li").mousedown(function() {
       var text = $(this).text();
@@ -69,20 +68,27 @@
     
     this.$inputField.keyup(function() {
       var lastItem;
-      if (that.quicksearch.matchedResultsCount === 1) {
-        lastItem = that.$list.find("li:visible");
-        lastItem.addClass("highlighted");
-        currentIndex = lastItem.index();
-      }
-      
-      that.$list.find(".highlighted:hidden").removeClass("highlighted");
+      setTimeout(function() {
+        if (that.quicksearch.matchedResultsCount === 1) {
+          lastItem = that.$list.find("li:visible");
+          lastItem.addClass("highlighted");
+          currentIndex = lastItem.index();
+        }
+
+        that.$list.find(".highlighted:hidden").removeClass("highlighted");
+      }, 200);
+
     });
     
-    this.$inputField.blur(function() {
-      that.hideList();
+    this.$inputField.parent(".tag-wrapper").mouseleave(function() {
+      leaveTimer = setTimeout(function() {
+        that.hideList();
+      }, 400);
+    }).mouseenter(function() {
+      clearTimeout(leaveTimer);
     });
 
-    this.$inputField.focus(function() {
+    this.$inputField.click(function() {
       that.showList();
     })
     .keydown(function (e){
@@ -105,6 +111,7 @@
       $(this).addClass("highlighted");
     });
   };
+
 
   Tag.prototype.hideList = function() {
     this.$list.removeClass("showing-list");
@@ -163,12 +170,9 @@
   };
 
   Tag.prototype.needsScroll = function() {
-    console.log("maxVisibileItem", maxVisibleItem)
     if (currentIndex+1 > maxVisibleItem || currentIndex < minVisibleItem) {
-      console.log("needs scroll")
       return true;
     }
-    console.log("Doesnt need scroll")
     return false;
   };
   
@@ -178,11 +182,11 @@
     if (direction === "up") {
       maxVisibleItem--;
       minVisibleItem--;
-      scrollAmount = -LIST_ITEM_HEIGHT
+      scrollAmount = -LIST_ITEM_HEIGHT;
     } else {
       maxVisibleItem++;
       minVisibleItem++;
-      scrollAmount = LIST_ITEM_HEIGHT
+      scrollAmount = LIST_ITEM_HEIGHT;
     }
     
     listScrollPosition += scrollAmount;
