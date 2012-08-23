@@ -56,6 +56,7 @@
   Tag.prototype.addEvents = function() {
     var that = this;
     var leaveTimer = 0;
+    var scrollTimer = 0;
 
     this.$list.find("li").mousedown(function() {
       var text = $(this).text();
@@ -64,6 +65,13 @@
     
     this.$list.keydown(function(e) {
       e.preventDefault();
+    });
+    
+    this.$list.scroll(function() {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function() {
+        that.setMinMaxItemIndexes();
+      }, 500);
     });
     
     this.$inputField.keyup(function() {
@@ -77,7 +85,6 @@
 
         that.$list.find(".highlighted:hidden").removeClass("highlighted");
       }, 200);
-
     });
     
     this.$inputField.parent(".tag-wrapper").mouseleave(function() {
@@ -103,6 +110,8 @@
         }
         this.blur();
       }
+      
+      that.setMinMaxItemIndexes();
     });
     
     this.$items.live("hover", function() {
@@ -110,6 +119,13 @@
       currentIndex = $(this).index();
       $(this).addClass("highlighted");
     });
+  };
+  
+  Tag.prototype.setMinMaxItemIndexes = function() {
+    var listHeight = this.quicksearch.matchedResultsCount * LIST_ITEM_HEIGHT;
+    listScrollPosition = this.$list.scrollTop();
+    minVisibleItem = parseInt( ( listHeight - (listHeight-listScrollPosition) ) / LIST_ITEM_HEIGHT );
+    maxVisibleItem = minVisibleItem + 5;
   };
 
 
@@ -226,8 +242,6 @@
     if (this.needsScroll()) {
       this.scroll(direction);
     }
-    
-    console.log(currentIndex)
   };
 
   Tag.prototype.keyAction = function(e) {
