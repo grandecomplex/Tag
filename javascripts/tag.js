@@ -216,11 +216,11 @@
     lastVisibleIndex = this.$list.find(":visible:last").index();
     highlightedIndex = $currentHighlighted.index();
     
-    if (!$currentHighlighted.length) {
-      return $currentHighlighted.nextAll().last().addClass("highlighted");
-    }
-    
     if (direction === "down") {
+      if (!$currentHighlighted.length) {
+        return this.$list.find(":visible").first().addClass("highlighted");
+      }
+      
       if (lastVisibleIndex === highlightedIndex) {
         return;
       }
