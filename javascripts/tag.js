@@ -1,20 +1,14 @@
-
 (function() {
-  var SEPARATOR = ",";
-  
-  var currentIndex = -1;
-  
-  var listItemLength;
-  
-  var isListShowing = false;
-  
-  var LIST_ITEM_HEIGHT;
-  
-  var ITEMS_VISIBLE_COUNT;
-  
-  var listScrollPosition = 0;
-  
-  var maxVisibleItem, minVisibleItem = 0;
+  var SEPARATOR = ",",
+      currentIndex = -1,
+      listItemLength,
+      isListShowing = false,
+      LIST_ITEM_HEIGHT,
+      ITEMS_VISIBLE_COUNT,
+      listScrollPosition = 0,
+      maxVisibleItem, 
+      minVisibleItem = 0,
+      currentElement;
   
   function setHeight($parent, $items) {
     var height; 
@@ -185,12 +179,12 @@
     $(tag).remove();
   };
 
-  Tag.prototype.needsScroll = function() {
+  function needsScroll() {
     if (currentIndex+1 > maxVisibleItem || currentIndex < minVisibleItem) {
       return true;
     }
     return false;
-  };
+  }
   
   Tag.prototype.scroll = function (direction) {
     var scrollAmount;
@@ -211,35 +205,44 @@
   };
 
   Tag.prototype.selectItem = function(direction) {
+    var $currentHighlighted, lastVisibleIndex, highlightedIndex, $nextItem, $prevItem;
+    
     if ( !isListShowing && direction !== "down" && direction !== "up" ) {
       return;
     }
     
-    this.$items.eq(currentIndex).removeClass("highlighted");
+    $currentHighlighted = this.$list.find(".highlighted");
+    
+    lastVisibleIndex = this.$list.find(":visible:last").index();
+    highlightedIndex = $currentHighlighted.index();
+    
+    if (!$currentHighlighted.length) {
+      return $currentHighlighted.nextAll().last().addClass("highlighted");
+    }
     
     if (direction === "down") {
-      if (listItemLength <= currentIndex+1) {
-        this.$items.eq(currentIndex).addClass("highlighted");
-        
+      if (lastVisibleIndex === highlightedIndex) {
         return;
       }
       
-      currentIndex++;
-      this.$items.eq(currentIndex).addClass("highlighted");
+      $nextItem = $currentHighlighted.nextAll(":visible").first();
+      $nextItem.addClass("highlighted");      
+      currentIndex = $nextItem.index();
       
     } else if (direction === "up") {
       
       if (currentIndex > 0) {
-
-        currentIndex--;
-        this.$items.eq(currentIndex).addClass("highlighted");
-        
+        $prevItem = $currentHighlighted.prevAll(":visible").first();
+        currentIndex = $prevItem.index();
+        $prevItem.addClass("highlighted");
       } else if (currentIndex === 0) {
         currentIndex = -1;
       }
     }
     
-    if (this.needsScroll()) {
+    $currentHighlighted.removeClass("highlighted");
+    
+    if (needsScroll()) {
       this.scroll(direction);
     }
   };
@@ -273,5 +276,4 @@
   } else {
     window.Tag = Tag;
   }
-
 })();
