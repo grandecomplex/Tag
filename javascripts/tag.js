@@ -28,11 +28,6 @@
     
     $parent.height(LIST_ITEM_HEIGHT*numberOfItems);
   }
-  
-  function resetMaxMinVisibleItems() {
-    maxVisibleItem = ITEMS_VISIBLE_COUNT;
-    minVisibleItem = 0;
-  }
 
   var Tag = function(namespace, options) {
     namespace = "#"+namespace+"-";
@@ -123,11 +118,16 @@
   
   Tag.prototype.setMinMaxItemIndexes = function() {
     var listHeight = this.quicksearch.matchedResultsCount * LIST_ITEM_HEIGHT;
-    listScrollPosition = this.$list.scrollTop();
-    minVisibleItem = parseInt( ( listHeight - (listHeight-listScrollPosition) ) / LIST_ITEM_HEIGHT );
+    var scrollTop = this.$list.scrollTop();
+    listScrollPosition = scrollTop - (scrollTop % LIST_ITEM_HEIGHT);
+    minVisibleItem = parseInt( ( listHeight - (listHeight-listScrollPosition) ) / LIST_ITEM_HEIGHT, 10 );
     maxVisibleItem = minVisibleItem + 5;
   };
-
+  
+  function resetMaxMinVisibleItems() {
+    maxVisibleItem = ITEMS_VISIBLE_COUNT;
+    minVisibleItem = 0;
+  }
 
   Tag.prototype.hideList = function() {
     this.$list.removeClass("showing-list");
