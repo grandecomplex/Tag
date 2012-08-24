@@ -1,4 +1,4 @@
-(function() {
+(function($, window, undefined) {
   var SEPARATOR = ",",
       currentIndex = -1,
       listItemLength,
@@ -27,6 +27,7 @@
     namespace = "#"+namespace+"-";
 
     this.$inputField = $(namespace+"text");
+    this.$wrapper = this.$inputField.parent();
     this.$list = $(namespace+"list");
     this.$tags = $(namespace+"tags");
     this.$hiddenField = $(namespace+"hidden");
@@ -76,10 +77,12 @@
       }, 200);
     });
     
-    this.$inputField.parent(".tag-wrapper").mouseleave(function() {
-      leaveTimer = setTimeout(function() {
-        that.hideList();
-      }, 400);
+    this.$wrapper.mouseleave(function() {
+      if ($(this).find("input:focus").length === 0) {
+        leaveTimer = setTimeout(function() {
+          that.hideList();
+        }, 200);
+      }
     }).mouseenter(function() {
       clearTimeout(leaveTimer);
     });
@@ -279,4 +282,4 @@
   } else {
     window.Tag = Tag;
   }
-})();
+})($, window);
