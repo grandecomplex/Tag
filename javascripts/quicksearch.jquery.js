@@ -34,16 +34,21 @@
 			}
 		}, opt);
 		
+		this.visibleItems = [];
+		
 		this.go = function () {
 			
-			var i = 0,
+			var i,
 				numMatchedRows = 0,
 				noresults = true, 
 				query = options.prepareQuery(val),
 				val_empty = (val.replace(' ', '').length === 0);
 			
-			for (var i = 0, len = rowcache.length; i < len; i++) {
+			this.visibleItems = [];
+			
+			for (i = 0, len = rowcache.length; i < len; i++) {
 				if (val_empty || options.testQuery(query, cache[i], rowcache[i])) {
+          this.visibleItems.push($(rowcache[i]).index());
 					options.show.apply(rowcache[i]);
 					noresults = false;
 					numMatchedRows++;
@@ -60,6 +65,7 @@
 			}
 			
 			this.matchedResultsCount = numMatchedRows;
+			$("body").trigger("quicksearch:matchedResultsSet", numMatchedRows);
 			this.loader(false);
 			options.onAfter();
 			
@@ -67,8 +73,8 @@
 		};
 		
 		/*
-		 * External API so that users can perform search programatically. 
-		 * */
+    * External API so that users can perform search programatically. 
+    * */
 		this.search = function (submittedVal) {
 			val = submittedVal;
 			e.trigger();

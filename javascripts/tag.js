@@ -99,8 +99,9 @@
         }
         this.blur();
       }
-      
-      that.setMinMaxItemIndexes();
+      $("body").bind("quicksearch:matchedResultsSet", function() {
+        that.setMinMaxItemIndexes();
+      });
     });
     
     this.$items.live("hover", function() {
@@ -180,7 +181,9 @@
   };
 
   function needsScroll() {
-    if (currentIndex+1 > maxVisibleItem || currentIndex < minVisibleItem) {
+    var visibleItems = this.quicksearch.visibleItems;
+    
+    if (currentIndex === visibleItems[maxVisibleItem] || currentIndex === visibleItems[minVisibleItem-1]) {
       return true;
     }
     return false;
@@ -242,7 +245,7 @@
     
     $currentHighlighted.removeClass("highlighted");
     
-    if (needsScroll()) {
+    if (needsScroll.call(this)) {
       this.scroll(direction);
     }
   };
