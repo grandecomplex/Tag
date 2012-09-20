@@ -24,6 +24,7 @@
   }
 
   var Tag = function(namespace, options) {
+    this.namespace = namespace;
     namespace = "#"+namespace+"-";
 
     this.$inputField = $(namespace+"text");
@@ -145,7 +146,7 @@
   };
 
   Tag.prototype.addTag = function(text) {
-    var tag, btnRemove, currentTags, that = this;
+    var tag, btnRemove, that = this;
 
     if (text === "") {
       return;
@@ -153,9 +154,8 @@
 
     tag = document.createElement("div");
     btnRemove = document.createElement("a");
-    currentTags = this.$hiddenField.val();
-
-    this.$hiddenField.val(currentTags+text+SEPARATOR);
+    
+    this.saveTag(text);
 
     text = document.createTextNode(text);
 
@@ -172,6 +172,17 @@
     });
 
     this.hideList();
+  };
+  
+  Tag.prototype.saveTag = function(text) {
+    var currentTags = this.$hiddenField.val();
+    var event = $.Event("tag:saved:"+this.namespace);
+
+    this.$hiddenField.val(currentTags+text+SEPARATOR);
+    
+    event.id = this.$hiddenField.attr("id");
+    event.text = text;
+    $(window).trigger(event);
   };
 
   Tag.prototype.removeTag = function(tag, btnRemove) {
