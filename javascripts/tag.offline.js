@@ -16,22 +16,23 @@
     } catch (e) {}
   }
   
-  function setData(hiddenId) {
-    var data = {};
-    var text = $("#"+hiddenId).val();
+  function setData(hiddenId, text) {
+    var data = getData();
     data[hiddenId] = text;
 
     data = JSON.stringify(data);
     localStorage.setItem(LOCAL_STORAGE_KEY, data);
   }
 
-  var Offline = function(tag, localStorageKey) {
+  var Offline = function(tag, localStorageKey, shouldNotSaveToHidden) {
     var data;
     var value;
             
     if (!localStorage || !JSON.stringify) {
       return;
     }
+    
+    this.shouldNotSaveToHidden = shouldNotSaveToHidden || false;
     
     LOCAL_STORAGE_KEY = localStorageKey;
     
@@ -54,7 +55,7 @@
   };
   
   Offline.prototype.addEvents = function() {
-    $(window).bind("tag:saved:"+this.namespace, function(e) {
+    $(window).bind("tag:changed:"+this.namespace, function(e) {
       var hiddenId = e.id, text = e.text;
             
       setData(hiddenId, text);
@@ -67,7 +68,8 @@
         array,
         i = 0;
         
-    tag.$hiddenField.val(this.value);
+    //tag.$hiddenField.val(this.value);
+    
   
     if (this.value.lastIndexOf(",") === length-1) {
       this.value = this.value.slice(0, length -1);
@@ -83,7 +85,9 @@
   };
 
   if (typeof define !== "undefined") {
-    define("Tag.Offline", [], Offline);
+    define([], function() {
+      return Offline;
+    });
   } else {
     window.Tag = window.Tag || {};
     window.Tag.Offline = Offline;

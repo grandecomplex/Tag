@@ -176,20 +176,28 @@
   
   Tag.prototype.saveTag = function(text) {
     var currentTags = this.$hiddenField.val();
-    var event = $.Event("tag:saved:"+this.namespace);
-
-    this.$hiddenField.val(currentTags+text+SEPARATOR);
+    var event = $.Event("tag:changed:"+this.namespace);
+    var tagsText = currentTags+text+SEPARATOR;
+    
+    this.$hiddenField.val(tagsText);
     
     event.id = this.$hiddenField.attr("id");
-    event.text = text;
+    event.text = tagsText;
     $(window).trigger(event);
   };
 
   Tag.prototype.removeTag = function(tag, btnRemove) {
     var text = this.$hiddenField.val();
     text = text.replace(tag.innerText+SEPARATOR, "");
+    
+    var event = $.Event("tag:changed:"+this.namespace);
+    event.id = this.$hiddenField.attr("id");
+    event.text = text;    
+    
     this.$hiddenField.val(text);
-
+    
+    $(window).trigger(event);
+    
     $(btnRemove).unbind("click");
     $(tag).remove();
   };
@@ -289,7 +297,9 @@
   
 
   if (typeof define !== "undefined") {
-    define("Tag", [], Tag);
+    define([], function() {
+      return Tag;
+    });
   } else {
     window.Tag = Tag;
   }

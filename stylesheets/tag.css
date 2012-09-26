@@ -67,7 +67,7 @@
 }
 
 .tags a {
-  background: transparent url(<%= asset_data_uri "x.png" %>) no-repeat right 0;
+  background: transparent url(../x.png) no-repeat right 0;
   position: absolute;
   right: 0px;
   top: 4px;
