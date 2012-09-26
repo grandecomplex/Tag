@@ -205,6 +205,10 @@
   function needsScroll() {
     var visibleItems = this.quicksearch.visibleItems;
     
+    if (typeof visibleItems === "undefined" || visibleItems < 5) {
+      return false;
+    }
+    
     if (currentIndex === visibleItems[maxVisibleItem] || currentIndex === visibleItems[minVisibleItem-1]) {
       return true;
     }
