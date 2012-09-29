@@ -3,29 +3,19 @@
       currentIndex = -1,
       listItemLength,
       isListShowing = false,
-      LIST_ITEM_HEIGHT,
-      ITEMS_VISIBLE_COUNT,
+      itemsVisible = 5,
       listScrollPosition = 0,
       maxVisibleItem, 
       minVisibleItem = 0,
       currentElement;
-  
-  function setHeight($parent, $items) {
-    var height; 
-    
-    numberOfItems = 5;
-    
-    ITEMS_VISIBLE_COUNT = numberOfItems;
-    resetMaxMinVisibleItems();
-    
-    LIST_ITEM_HEIGHT = $items.outerHeight();
-    
-    $parent.height(LIST_ITEM_HEIGHT*numberOfItems);
-  }
 
   var Tag = function(namespace, options) {
     this.namespace = namespace;
     namespace = "#"+namespace+"-";
+    
+    options = options || {};
+    
+    itemsVisible = options.itemsVisible || 5;
 
     this.$inputField = $(namespace+"text");
     this.$wrapper = this.$inputField.parent();
@@ -35,13 +25,20 @@
     
     this.$items = this.$list.find("li");
     
-    setHeight(this.$list, this.$items);
+    this.setHeight(this.$list, this.$items);
     
     listItemLength = this.$items.length;
 
     this.quicksearch = this.$inputField.quicksearch(namespace+"list li");
 
     this.addEvents();
+  };
+  
+  Tag.prototype.setHeight = function($parent, $items) {
+    resetMaxMinVisibleItems();
+    this.LIST_ITEM_HEIGHT = 24;
+    
+    $parent.height(this.LIST_ITEM_HEIGHT*itemsVisible);
   };
 
   Tag.prototype.addEvents = function() {
@@ -50,7 +47,9 @@
     var scrollTimer = 0;
 
     this.$list.find("li").mousedown(function() {
-      var text = $(this).text();
+      var $this = $(this);
+      var text = $this.text();
+            
       that.addTag(text);
     });
     
@@ -95,17 +94,12 @@
       var keyCode = e.keyCode;
       that.keyAction(e);
 
-      if(keyCode === 13) {
-        e.preventDefault();
-        var highlighted = that.$list.find(".highlighted");
-        if (highlighted.length) {
-          that.addTag(highlighted.text());
-        }
-        this.blur();
-      }
       $("body").bind("quicksearch:matchedResultsSet", function() {
         that.setMinMaxItemIndexes();
       });
+    })
+    .blur(function() {
+      that.hideList();
     });
     
     this.$items.live("hover", function() {
@@ -116,15 +110,15 @@
   };
   
   Tag.prototype.setMinMaxItemIndexes = function() {
-    var listHeight = this.quicksearch.matchedResultsCount * LIST_ITEM_HEIGHT;
+    var listHeight = this.quicksearch.matchedResultsCount * this.LIST_ITEM_HEIGHT;
     var scrollTop = this.$list.scrollTop();
-    listScrollPosition = scrollTop - (scrollTop % LIST_ITEM_HEIGHT);
-    minVisibleItem = parseInt( ( listHeight - (listHeight-listScrollPosition) ) / LIST_ITEM_HEIGHT, 10 );
+    listScrollPosition = scrollTop - (scrollTop % this.LIST_ITEM_HEIGHT);
+    minVisibleItem = parseInt( ( listHeight - (listHeight-listScrollPosition) ) / this.LIST_ITEM_HEIGHT, 10 );
     maxVisibleItem = minVisibleItem + 5;
   };
   
   function resetMaxMinVisibleItems() {
-    maxVisibleItem = ITEMS_VISIBLE_COUNT;
+    maxVisibleItem = itemsVisible;
     minVisibleItem = 0;
   }
 
@@ -137,7 +131,10 @@
   };
   
   Tag.prototype.showList = function() {
+    $(".tag-list").removeClass("showing-list");
+    
     this.$list.addClass("showing-list");
+        
     this.$list.find("li").css("display", "block");
     isListShowing = true;
     currentIndex = -1;
@@ -221,11 +218,11 @@
     if (direction === "up") {
       maxVisibleItem--;
       minVisibleItem--;
-      scrollAmount = -LIST_ITEM_HEIGHT;
+      scrollAmount = -this.LIST_ITEM_HEIGHT;
     } else {
       maxVisibleItem++;
       minVisibleItem++;
-      scrollAmount = LIST_ITEM_HEIGHT;
+      scrollAmount = this.LIST_ITEM_HEIGHT;
     }
     
     listScrollPosition += scrollAmount;
@@ -277,6 +274,8 @@
   };
 
   Tag.prototype.keyAction = function(e) {
+    var highlighted;
+    
     switch(e.keyCode) {
       case 40:
         if (!isListShowing) {
@@ -291,7 +290,20 @@
         this.selectItem("up");
       break;
       case 13:
-        this.addTag(e.target.value);
+        e.preventDefault();
+      
+        if (this.quicksearch.matchedResultsCount === 0) {
+          return this.addTag(e.target.value);
+        }
+        
+        highlighted = this.$list.find(".highlighted");
+        
+        if (highlighted.length) {
+          this.addTag(highlighted.text());
+        }
+        
+        this.$inputField.blur();
+        
         break;
       case 9:
         this.hideList();
