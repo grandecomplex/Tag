@@ -93,13 +93,13 @@
     .keydown(function (e){
       var keyCode = e.keyCode;
       that.keyAction(e);
-
-      $("body").bind("quicksearch:matchedResultsSet", function() {
-        that.setMinMaxItemIndexes();
-      });
     })
     .blur(function() {
       that.hideList();
+    });
+    
+    $("body").bind("quicksearch:matchedResultsSet", function() {
+      that.setMinMaxItemIndexes();
     });
     
     this.$items.live("hover", function() {
@@ -276,6 +276,22 @@
   Tag.prototype.keyAction = function(e) {
     var highlighted;
     
+    function save(e) {
+      if (e) {e.preventDefault();}
+    
+      if (this.quicksearch.matchedResultsCount === 0) {
+        return this.addTag(e.target.value);
+      }
+      
+      highlighted = this.$list.find(".highlighted");
+      
+      if (highlighted.length) {
+        this.addTag(highlighted.text());
+      }
+      
+      this.$inputField.blur();
+    }
+    
     switch(e.keyCode) {
       case 40:
         if (!isListShowing) {
@@ -290,23 +306,15 @@
         this.selectItem("up");
       break;
       case 13:
-        e.preventDefault();
-      
-        if (this.quicksearch.matchedResultsCount === 0) {
-          return this.addTag(e.target.value);
-        }
-        
-        highlighted = this.$list.find(".highlighted");
-        
-        if (highlighted.length) {
-          this.addTag(highlighted.text());
-        }
-        
-        this.$inputField.blur();
+        save.call(this, e);
         
         break;
       case 9:
-        this.hideList();
+        if (this.$inputField.val() === "") {
+          return this.hideList();
+        }
+        save.call(this, e);
+        $(this.$wrapper).next().find("input").focus();
         break;
     }
   };
