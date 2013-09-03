@@ -272,25 +272,25 @@
       this.scroll(direction);
     }
   };
+  
+  function save(e) {
+    if (e) {e.preventDefault();}
+  
+    if (this.quicksearch.matchedResultsCount === 0) {
+      return this.addTag(e.target.value);
+    }
+    
+    highlighted = this.$list.find(".highlighted");
+    
+    if (highlighted.length) {
+      this.addTag(highlighted.text());
+    }
+    
+    this.$inputField.blur();
+  }
 
   Tag.prototype.keyAction = function(e) {
     var highlighted;
-    
-    function save(e) {
-      if (e) {e.preventDefault();}
-    
-      if (this.quicksearch.matchedResultsCount === 0) {
-        return this.addTag(e.target.value);
-      }
-      
-      highlighted = this.$list.find(".highlighted");
-      
-      if (highlighted.length) {
-        this.addTag(highlighted.text());
-      }
-      
-      this.$inputField.blur();
-    }
     
     switch(e.keyCode) {
       case 40:
